@@ -6,7 +6,7 @@ defmodule DiscussWeb.TopicController do
 
   def index(conn, _params) do
     topics = Repo.all(Topic)
-    render conn, "index.html"
+    render conn, "index.html", topics: topics
   end
 
   def new(conn, params) do
@@ -19,9 +19,15 @@ defmodule DiscussWeb.TopicController do
     changeset = Topic.changeset(%Topic{}, topic)
 
    case Repo.insert(changeset) do
-     {:ok, post} -> IO.inspect(post)
+     {:ok, post} ->
+      conn
+      |> put_flash(:info, "Topic created!")
+      |> redirect(to: Routes.topic_path(conn, :index))
      {:error, changeset} ->
       render conn, "new.html", changeset: changeset
+      # conn
+      # |> put_flash(:warning, "Topic cannot be black!")
+      # |> redirect(to: Routes.topic_path(conn, :new))
    end
   end
 end
